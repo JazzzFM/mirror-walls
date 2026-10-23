@@ -1,0 +1,135 @@
+# Reflecting walls are self-collisions: cellular automata in a mirror box
+
+Code, figures and LaTeX source for the article of the same title by
+Miguel E. Pérez Ibarra and Jaziel Flores Rodríguez. The compiled article is
+[`main.pdf`](main.pdf); the source is [`main.tex`](main.tex).
+
+## The idea in one paragraph
+
+A cellular automaton with a reflection-symmetric rule, run on a box whose
+walls are mirror ghost cells, is exactly the same automaton on the doubled
+periodic domain restricted to mirror-symmetric states (the method of images;
+[`code/reflection_principle.py`](code/reflection_principle.py) checks it to the
+last digit). So a structure that reaches a wall collides head-on with **its own
+mirror image**, at the one relative phase the wall admits; at an edge it meets
+three images, at a 3-D corner seven. What a wall does to a structure is one
+entry of the bulk collision table. We test this on three automata, chosen so
+that this entry has three different outcomes.
+
+## Elastic: Wolfram's continuous automaton, a = 0.398
+
+`u' = frac(mean of three cells + 0.398)`. Ring (left), box with mirror walls
+(middle), the 60 cells nearest the left wall (right); time downward, black
+where neighbours differ.
+
+<p align="center">
+<img src="figures/class4_1d_a0.398_periodic.png" height="420">
+<img src="figures/class4_1d_a0.398_mirror.png" height="420">
+<img src="figures/class4_1d_wallzoom.png" height="420">
+</p>
+
+Movers come back from the wall as their mirror images, because the head-on
+collision of two movers is elastic. The walls are invisible to the population:
+0.0723 clusters per cell per step in the bulk of both the ring and the box.
+
+## Absorbing: rule 54
+
+Off-ether display (black where the state differs from the exact background).
+Left: a single right and left mover annihilate on a ring. Middle: a single
+mover reaches the mirror wall (right edge) and vanishes, the same event.
+Right: a single mover against a train of four; three continue.
+
+![](figures/rule54_events.png)
+
+Exhaustive enumeration shows each direction of motion has a single phase
+class, so every head-on collision of two single movers is mirror-symmetric
+and annihilates. A mirror-symmetric state has as many left as right movers, so
+a sparse box drains all of its movers, while a ring keeps the unbalanced
+excess forever:
+
+| 90 sparse launches without guns | movers at step 300 | at step 2000 | launches with survivors |
+|---|--:|--:|--:|
+| ring, 400 cells | 1.17 | 1.14 | 46 / 90 |
+| box, 401 cells  | 0.00 | 0.00 | 0 / 90 |
+
+One launch, ring (left) and box (right):
+
+<p align="center"><img src="figures/rule54_sparse.png" width="560"></p>
+
+## No principle: rule 110
+
+Rule 110 is not reflection symmetric, so a wall is not a self-collision. Its
+left wall can nucleate a different background that invades the box and emits
+gliders (left: ring; right: box, same initial data; black where the 14-cell
+word is not an ether word):
+
+![](figures/rule110_defects_fixed.png)
+
+## Two and three dimensions
+
+In 2-D the family has no gliders; its structures are phase walls (a near 1/3)
+and intermittent spots (a near 1/2). Box 128 × 128 with mirror walls, steps
+0, 50, 100, 200 (top) and 400, 600, 800, 1200 (bottom):
+
+![](figures/filmstrip2d_a0.33.png)
+
+![](figures/filmstrip2d_a0.49.png)
+
+Activity per boundary stratum, indexed by the ternary cube (0 interior, 1
+face, 2 edge or 2-D corner, 3 corner), mean of eight seeds with the standard
+error in the last digit:
+
+| regime | grid | codim 0 | codim 1 | codim 2 | codim 3 |
+|---|---|--:|--:|--:|--:|
+| chaos, a = 0.398 | 128² | 0.989(0) | 0.948(0) | 0.738(3) | |
+| chaos, a = 0.398 | 32³ | 0.997(0) | 0.993(0) | 0.981(0) | 0.922(3) |
+| intermittent, a = 0.49 | 128² | 0.558(2) | 0.494(2) | 0.196(4) | |
+| intermittent, a = 0.49 | 32³ | 0.484(5) | 0.505(5) | 0.506(3) | 0.305(8) |
+| phase walls, a = 0.33 | 128² | 0.510(5) | 0.340(3) | 0.172(11) | |
+| chaos (3-D rule), a = 0.33 | 32³ | 0.996(2) | 0.992(5) | 0.973(7) | 0.860(10) |
+
+In the phase-wall regime the quiet layer is several cells deep: a phase wall
+parallel to a mirror meets its image and the pair annihilates, the 2-D
+counterpart of rule 54's absorbing walls.
+
+## Running the code
+
+Requirements: Python 3.12 with NumPy; pygame for the live viewer. PNGs are
+written by [`code/pngio.py`](code/pngio.py) (no PIL), and
+[`code/png2pdf.py`](code/png2pdf.py) turns them into vector PDFs for the
+article.
+
+```
+cd code
+python3.12 reflection_principle.py        # box == doubled ring, exactly
+python3.12 view1d.py 0.398 300 600        # 1-D space-time diagrams
+python3.12 rule54_exact.py 10             # rule 54: phase classes, wall event, head-on collisions
+python3.12 rule54_phases.py               # rule 54: phases of every mover in 1500 launches
+python3.12 rule54_sparse.py               # rule 54: sparse launches, ring vs box
+python3.12 fig_rule54.py                  # rule 54 figures
+python3.12 strata_seeds.py 0.33 128 1500 32 800 8   # activity per stratum
+python3.12 view2d.py 0.33 160 mirror      # live viewer: space = pause, r = reseed, q = quit
+```
+
+`SELECTION_EXPERIMENT.md` is the lab notebook of the experiments behind the
+selection discussion, including the dead ends; read its erratum first.
+
+## Building the article
+
+```
+pdflatex main.tex && pdflatex main.tex
+```
+
+## Related
+
+- The mirror walls are the ternary-cube boundary rule of *One case, not
+  twenty-seven: the ternary cube as the index set for boundary stencils of
+  finite-difference schemes in any dimension*, by the same authors.
+- The automaton arose from the quantized heat simulations explained in
+  *Apparent complexity of quantized diffusion: contour maps, aliasing and
+  moiré*, code at [MiguelPerezI/heat-parity-ca](https://github.com/MiguelPerezI/heat-parity-ca).
+
+## License
+
+Code under the MIT License (see `LICENSE`). The article text and figures are
+© the authors.

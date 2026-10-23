@@ -1,0 +1,616 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage[margin=1.1in]{geometry}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=blue!60!black,urlcolor=blue!60!black]{hyperref}
+\graphicspath{{figures/}}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\frc}{\operatorname{frac}}
+\DeclareMathOperator{\dist}{dist}
+
+\title{Reflecting Walls Are Self-Collisions:\\
+  Cellular Automata in a Mirror Box}
+\author{Miguel E.~P\'erez Ibarra\thanks{Affiliation and e-mail. (Placeholder.)}
+  \and Jaziel Flores Rodr\'iguez\thanks{Affiliation and e-mail. (Placeholder.)}}
+\date{\today\\[4pt]\small Code and figures: \url{https://github.com/MiguelPerezI/mirror-walls}}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+A cellular automaton with a reflection-symmetric local rule, run on a
+box whose walls are implemented by mirror ghost cells, is exactly the
+same automaton on the doubled periodic domain restricted to
+mirror-symmetric configurations. This is the method of images, and it
+has a dynamical consequence that we make the organizing principle of the
+paper: a localized structure that reaches a wall collides head-on with
+its own mirror image, at the one relative phase the wall admits, and at
+a stratum of codimension $c$ of the box it meets $2^c-1$ images. What a
+wall does to a structure is therefore read off from the bulk collision
+table, restricted to symmetric collisions. We test this on three
+automata. In Wolfram's continuous automaton (three-cell mean plus $0.398$
+modulo $1$) the symmetric collision is elastic and the walls are
+invisible to the population: bulk densities in the box agree with the
+torus to three digits. In elementary rule~54 we show by exhaustive
+enumeration that each direction of motion has a single phase class, so
+every head-on collision of two single movers is mirror-symmetric and
+annihilates; the wall is a perfect absorber, and because a symmetric
+state carries as many left as right movers, a sparse box drains all of
+its movers (in $90$ of $90$ launches) while a torus keeps the unbalanced
+excess (in $46$ of $90$). In rule~110, which is not reflection
+symmetric, the principle fails and a wall becomes a phase source that
+can replace the background. In two and three dimensions the boundary
+strata, indexed by the ternary cube, are quiet in proportion to their
+codimension, and phase walls are cleared from a layer several cells deep
+by annihilation with their images. We discuss in what limited sense the
+box acts as a selecting environment.
+\end{abstract}
+
+\section{Introduction}\label{sec:intro}
+
+Localized structures of cellular automata (gliders, particles, defects)
+are usually studied on a ring or a torus, where nothing distinguishes
+one place from another. Finite domains with reflecting walls are the
+natural setting of the partial differential equations that many
+automata discretize, and they are where the question of an
+\emph{environment} first arises: a wall is a fixed feature that every
+structure eventually meets. This paper asks what reflecting walls do to
+localized structures, and answers it with one exact observation and
+three case studies.
+
+The observation (Section~\ref{sec:reflection}) is the method of images:
+for a rule that is symmetric under $i\mapsto-i$, the box with mirror
+ghosts is the periodic system on the doubled domain restricted to
+mirror-symmetric states. It follows that a wall is not a new kind of
+object for the dynamics. A structure meeting it undergoes the head-on
+collision with its own mirror image, at the single relative phase that
+puts the symmetry axis on the wall node. The effect of the wall is
+therefore the outcome of one entry of the bulk collision table, and
+whether the wall reflects, absorbs or transforms structures is decided
+by the rule, not by the boundary. Edges and corners of a box are fixed
+sets of several commuting reflections; we index them by the ternary
+cube \cite{TernaryCube}, in which each node of an $n$-dimensional box
+carries a word in $\{0,1,2\}^n$ recording, per axis, whether it lies on
+the lower wall, in the interior, or on the upper wall.
+
+The case studies are chosen so that the symmetric collision has three
+different outcomes. In the one-dimensional continuous automaton of
+Wolfram \cite[ch.~4]{NKS} at $a=0.398$ it is elastic, and the walls are
+invisible (Section~\ref{sec:cca}). In elementary rule~54
+\cite{Boccara,HansonCrutchfield,Martinez2006,Martinez2014} it annihilates;
+we show that in this rule it is the \emph{only} head-on collision of two
+single movers, so walls and bulk destroy movers by the same event, and
+the difference between box and torus is a conservation argument: a
+symmetric state is balanced (Section~\ref{sec:r54}). Rule~110
+\cite{Cook} is not reflection symmetric, and its walls behave as sources
+(Section~\ref{sec:r110}). In two and three dimensions
+(Section~\ref{sec:2d}) we measure activity per boundary stratum for the
+continuous automaton and find quiet strata, quieter with increasing
+codimension, and a deep boundary layer where the bulk is organized in
+phase domains.
+
+\paragraph{What is and is not new.} The method of images is classical,
+and the glider collisions of rules~54 and~110 are catalogued
+\cite{Boccara,HansonCrutchfield,Martinez2006,Martinez2014}. What we add
+is the reading of reflecting walls as symmetric self-collisions, the
+balance argument that turns it into a statement about populations, an
+exhaustive enumeration of the phase classes of the rule-54 movers in
+the uniform background, and measurements of how boundary strata of every
+codimension affect a two- and three-dimensional automaton. We found no
+prior study of localized structures of these automata against
+reflecting walls.
+
+\section{Setting}\label{sec:setting}
+
+\paragraph{Continuous automata.} On an $n$-dimensional grid with nodes
+$\mathbf i$ and values $u_{\mathbf i}\in[0,1)$, the rule is
+\begin{equation}\label{eq:cca}
+  u^{l+1}_{\mathbf i}=\frc\Bigl(u^l_{\mathbf i}+\sum_{m=1}^nr_m\,\tilde\delta^2_{m,\tau_m(\mathbf i)}u^l_{\mathbf i}+a\Bigr),
+\end{equation}
+with $r_m=1/(2n+1)$, that is, the mean of the $(2n+1)$-point
+neighbourhood plus a constant $a$, modulo~$1$. The operator
+$\tilde\delta^2_{m,\tau_m}$ is the per-axis second difference of the
+ternary-cube rule \cite{TernaryCube}: on an interior digit $\tau_m=1$ it
+is the central difference, on a wall digit it uses the mirror ghost
+value $u_{-1}:=u_{1}$ (lower wall) or $u_{N}:=u_{N-2}$ (upper wall).
+This is the explicit heat step with Neumann walls followed by a shift and
+a fold, a coupled map lattice in the sense of \cite{Kaneko}. Wolfram
+reports class-4 behaviour in one dimension for $a=0.398$ and $a=0.4$
+\cite[p.~244]{NKS}. Values are rounded to nine decimals after each step
+to emulate exact arithmetic, which makes runs reproducible across
+machines.
+
+\paragraph{Elementary automata.} For an elementary rule $f$ on
+$\{0,1\}^N$, the box uses the same mirror ghosts, $u_{-1}:=u_1$ and
+$u_N:=u_{N-2}$. A rule is reflection symmetric if
+$f(\ell,c,r)=f(r,c,\ell)$; rule~54 is, rule~110 is not (its mirror image
+is rule~124).
+
+\paragraph{Background and defects.} Rules~54 and~110 have a periodic
+background, the ether. For rule~54 it is the tiling by $1000$, of
+temporal period~$4$; for rule~110 the tiling by $11000100110111$, of
+temporal period~$7$. Since the ether is known exactly, we display and
+count structures by comparing the state with the pure ether evolved in
+the same geometry: a cell is \emph{off-ether} if it differs from it. For
+rule~54 the mirror box is ether-compatible when its length is $4k+1$,
+which puts both wall nodes on a~$1$ of the tile.
+
+\section{The reflection principle}\label{sec:reflection}
+
+Write $\mathcal R_m$ for the even reflection of a configuration across
+the wall nodes of axis $m$, which turns the box grid
+$\{0,\dots,N_m-1\}$ into the periodic grid of length $2(N_m-1)$, and
+$\mathcal R=\mathcal R_1\cdots\mathcal R_n$ for the reflection into the
+torus $\mathbb T=\prod_m\Z/2(N_m-1)\Z$.
+
+\begin{theorem}[reflection principle]\label{thm:reflection}
+Let $F$ be a local rule whose per-axis stencil is symmetric under
+$i\mapsto-i$, followed by any pointwise map. Let $F_{\rm box}$ be $F$ on
+the box with mirror ghosts and $F_{\rm per}$ the same rule on
+$\mathbb T$. Then
+\[
+  \mathcal R\circ F_{\rm box}=F_{\rm per}\circ\mathcal R ,
+\]
+and $\mathcal R$ maps the box configurations bijectively onto the
+configurations of $\mathbb T$ that are symmetric under all $n$
+reflections, which form an invariant set of $F_{\rm per}$. This covers
+\eqref{eq:cca}, its weighted variants \cite[p.~244]{NKS}, and every
+reflection-symmetric elementary rule.
+\end{theorem}
+
+\begin{proof}
+At a node with an interior digit the two rules read the same neighbours.
+At a wall node the mirror ghost is exactly the value that the reflected
+configuration carries at the position beyond the wall, so the stencils
+agree. Symmetry of the stencil makes the update of a symmetric
+configuration at $-i$ equal to its update at $i$, so symmetry is
+preserved. Pointwise maps commute with both.
+\end{proof}
+
+This is the method of images, and for linear stencils it is the reason
+Neumann problems can be solved by even extension. Numerically the
+identity holds to the last digit: for \eqref{eq:cca} on $400$ cells for
+$3000$ steps in one dimension and on $64^2$ cells for $1000$ steps in
+two dimensions, the maximum difference between the box run and the
+doubled periodic run is $0$ (script \texttt{reflection\_principle.py}).
+
+\begin{corollary}[walls are self-collisions]\label{cor:self}
+Under the hypotheses of Theorem~\ref{thm:reflection}, the evolution of
+a structure that reaches a wall of the box is the evolution, in the
+periodic system, of the head-on collision of that structure with its
+mirror image, at the relative phase that puts the symmetry axis on the
+wall node. At a node of codimension $c$ (a word of the ternary cube with
+$c$ wall digits) the structure meets $2^c-1$ images under $c$ commuting
+reflections. A configuration supported on a stratum is a configuration
+of the periodic system that is symmetric under the corresponding
+reflections.
+\end{corollary}
+
+Two consequences are used below. First, the wall realizes only the
+\emph{symmetric} entries of the collision table, and it realizes them
+for every structure that reaches it: if a rule has several head-on
+phases with different outcomes, the wall picks out one, always the same.
+Second, a stratum is quiet for a kinematic reason: the wall node is a
+symmetry centre, so only mirror-symmetric local patterns can sit on it,
+and a node of codimension $c$ has $c$ of its neighbour pairs identified,
+so it has fewer independent neighbours to differ from.
+
+\begin{proposition}[balance]\label{prop:balance}
+Let a reflection-symmetric one-dimensional rule have, in a background,
+movers of speed $+v$ and $-v$ that are mirror images of each other.
+\begin{enumerate}
+\item In the doubled system of a box, the number of right movers equals the number of left movers at all times.
+\item Suppose that in some regime movers are neither created nor converted, that two movers of the same direction never meet, and that every head-on meeting of a right and a left mover annihilates both. Then on a ring the number $N_+-N_-$ is conserved and $|N_+-N_-|$ movers survive forever, while in the box every mover is eventually annihilated.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) The reflection maps right movers to left movers and the doubled
+state is symmetric. (2) Each annihilation removes one mover of each
+direction, which conserves $N_+-N_-$. On a ring of length $L$ a right and
+a left mover approach at relative speed $2v$ and meet within $L/(2v)$
+steps, so movers are annihilated in pairs until only one direction
+remains, and movers of one direction never meet. In the box, the
+doubled ring has $N_+=N_-$ by (1), so all movers are annihilated.
+\end{proof}
+
+\section{Elastic walls: the continuous automaton}\label{sec:cca}
+
+We take \eqref{eq:cca} in one dimension with $a=0.398$ from random data
+and the activity indicator
+$\chi_i=[\dist(u_i-u_{i+1},\Z)>0.05]$, which is Wolfram's difference
+display thresholded. Figure~\ref{fig:class4_1d} shows the space-time
+diagrams on a ring and in a box.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[height=0.45\textheight]{class4_1d_a0.398_periodic.pdf}\hfill
+\includegraphics[height=0.45\textheight]{class4_1d_a0.398_mirror.pdf}\hfill
+\includegraphics[height=0.45\textheight]{class4_1d_wallzoom.pdf}
+\caption{Class~4 in one dimension: $a=0.398$, three-cell mean plus $a$
+modulo $1$, $300$ cells, $600$ steps downward from random data, same
+seed, difference display (black where neighbours differ). Left: ring.
+Middle: mirror walls at both sides. Right: the $60$ cells nearest the
+left wall during steps $300$--$600$, magnified. Localized structures
+move through a periodic background and at the wall return as their
+mirror images, forming V shapes.}
+\label{fig:class4_1d}
+\end{figure}
+
+\paragraph{The zoo.} Tracking clusters of active cells on a $600$-cell
+ring over $3000$ steps gives one dominant mover, of speed $0.1$ cells per
+step in either direction and width about $3.5$ cells, and a rare slow,
+wider class (about $5\%$ of tracks), which is born in collisions and
+lives about $60$ steps against about $105$ for the movers. A head-on
+collision of two movers returns the pair, so by
+Corollary~\ref{cor:self} a mover hitting a wall should come back, and
+it does (Figure~\ref{fig:class4_1d}, right).
+
+\paragraph{The walls are invisible to the population.} Over ten seeds,
+$400$ cells and $10^4$ steps after a transient, counting active clusters
+in the bulk (cells $50$ to $350$) at every step, the ring and the box
+give $0.0723$ clusters per cell per step both, and fractions $0.406$ and
+$0.408$ of wide clusters (width at least $6$). Mean lifetimes of both
+classes agree between the geometries ($104$ against $105$ steps for
+movers, $59$ against $60$ for the slow class). Total cluster counts over
+$2\cdot10^4$ steps fluctuate around $30$ in both geometries with no
+trend. Near the walls, the wall node has activity $0.09$ and its
+neighbour $0.23$ against a bulk value of $0.27$, after which the bulk
+value is reached: a quiet layer two cells deep, as
+Corollary~\ref{cor:self} predicts, and nothing else. Walls that reflect
+elastically do not select.
+
+\section{Absorbing walls: rule 54}\label{sec:r54}
+
+Rule~54 has the ether $1000$, movers $w_\pm$ of speed $\pm1$, stationary
+breathers, and glider guns \cite{Boccara,HansonCrutchfield,Martinez2006,Martinez2014}.
+Its head-on collisions are known to depend on the relative phase:
+gliders ``in the same phase'' annihilate, gliders in anti-phase fuse into
+a stationary breather \cite{Martinez2006}.
+
+\paragraph{One phase class per direction.} We insert every binary word
+of length up to $10$ at each of the four offsets into the ether, evolve
+$160$ steps on a ring, and keep the outcomes that consist of a single
+mover, identified as off-ether cells moving rigidly at speed one
+(script \texttt{rule54\_exact.py}). Up to translation by the ether
+period, exactly one shape is found for each direction: a pair of
+adjacent off-ether cells, starting at residue $2$ modulo $4$ (right
+movers) or $1$ modulo $4$ (left movers) at times divisible by~$4$; the
+other outcomes are trains of two or more movers four cells apart. A
+survey of every mover in $1500$ random launches of $20$ cells
+(script \texttt{rule54\_phases.py}), $3\times10^5$ observations including
+movers born in multi-body events, finds no other residue. So in the
+uniform ether the phase of a mover is not a free parameter, and the
+relative phase of a head-on collision of two single movers is fixed.
+
+\paragraph{The collision and the wall event.} Placing a single right
+and a single left mover at every admissible pair of offsets on a ring,
+we find one collision class: it is mirror-symmetric about a node at all
+times and annihilates both movers, leaving pure ether. This is the
+``same phase'' annihilation of \cite{Martinez2006}; the anti-phase
+fusion does not arise between single movers in the uniform ether. By
+Corollary~\ref{cor:self} the wall event is the same collision, and
+directly: a single right mover started at any offset in a box of length
+$4k+1$ meets the wall in one way, and nothing is left. A train of four
+movers meeting a single mover loses one member and continues; trains of
+two and three meeting the wall lose all their members
+(Figure~\ref{fig:r54events}).
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.9\textwidth]{rule54_events.pdf}
+\caption{Rule~54, off-ether display (black where the state differs from
+the exact ether), time downward, $160$ steps by $160$ cells. Left: a
+single right and a single left mover meet on the ring and annihilate.
+Middle: a single right mover reaches the mirror wall (right edge of the
+panel) and vanishes: the same event, with the left mover supplied by
+the reflection. Right: a single right mover meets a train of four left
+movers; one pair annihilates and three continue.}
+\label{fig:r54events}
+\end{figure}
+
+\paragraph{Sparse populations.} One random $8$-cell patch is placed at
+the centre of the ether, in a ring of $400$ cells and in a box of $401$
+cells with the same patch, and the movers are counted exactly (a right
+mover is a pair of off-ether cells at residue $2$ that reappears four
+cells to the right four steps later; script \texttt{rule54\_sparse.py}).
+Of $200$ patches, $110$ produce a glider gun, which fills either
+geometry with movers at the same rate; Table~\ref{tab:r54} summarizes
+the other $90$.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+& \multicolumn{6}{c}{mean number of movers at step} \\
+geometry & $100$ & $300$ & $600$ & $1000$ & $1500$ & $2000$ \\
+\midrule
+ring ($400$ cells) & 2.06 & 1.17 & 1.14 & 1.14 & 1.14 & 1.14 \\
+box ($401$ cells)  & 2.06 & 0.00 & 0.00 & 0.00 & 0.00 & 0.00 \\
+\bottomrule
+\end{tabular}
+\caption{Rule~54, $90$ sparse launches without guns, same patches in
+both geometries. At step $2000$ movers survive in $46$ of the $90$ rings
+and in none of the boxes. In every ring the survivors move in a single
+direction, and $N_+-N_-$ at step $300$ equals $N_+-N_-$ at step $2000$ in
+$88$ of the $90$ rings.}
+\label{tab:r54}
+\end{table}
+
+This is Proposition~\ref{prop:balance} at work. The hypotheses hold in
+the sparse regime by the enumeration above: every head-on meeting of
+single movers annihilates, and trains lose one member per meeting. On
+the ring the unbalanced movers never meet a partner and live forever;
+in the box each mover's partner is its own image, so all of them die,
+each within one crossing of the box (Figure~\ref{fig:r54sparse}). In the
+two exceptional rings the patch leaves a small stationary structure
+behind, and the single mover is absorbed by it on its first pass,
+an interaction outside the hypotheses of the proposition (stationary
+structures can absorb, reflect or convert movers \cite{Martinez2006}).
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=0.85\textwidth]{rule54_sparse.pdf}
+\caption{One sparse launch, off-ether display, $1200$ steps (every
+second step shown), ring of $400$ cells (left) and box of $401$ cells
+(right), same patch. The patch emits a train of three left movers and
+one right mover. On the ring the right mover meets the train across the
+periodic seam and annihilates one member; the other two circulate
+forever. In the box every mover meets its image at a wall.}
+\label{fig:r54sparse}
+\end{figure}
+
+\paragraph{Dense populations.} From random data on $1200$ cells the
+population is sustained by guns, and walls and bulk both destroy movers
+by the same collision. Over three seeds and six sampling times between
+steps $1000$ and $6000$ the ring carries $107\pm9$ movers and the box
+$94\pm13$: no difference beyond the fluctuations, which are dominated
+by the birth and death of guns. The walls are perfect absorbers, but in a
+dense population the bulk is nearly as effective.
+
+\section{Asymmetric rules: rule 110}\label{sec:r110}
+
+Rule~110 is not reflection symmetric, so Theorem~\ref{thm:reflection}
+does not apply and a mirror wall is a genuinely new boundary rule, not a
+self-collision. Its ether has spatial period $14$ and is not
+mirror-compatible: the right wall, which is nearly ether-compatible,
+hosts stationary structures and little else, but the left wall can be
+kicked by an arriving glider into a state that grows a different periodic
+background. That background invades the box behind a front, emitting
+fast right-moving gliders as it advances (Figure~\ref{fig:r110}). Once
+nucleated the invasion is total: in one of two $1400$-cell runs the
+ether fraction fell from $0.90$ at step $5000$ to $0$ at step $8000$; in
+the other it stayed at $0.96$ through step $8000$. The wall changes the
+population by emission and eventually destroys the medium the gliders
+live in. Without the reflection symmetry there is no principle that
+predicts what a wall does, and the outcome depends on the details of
+the boundary rule.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\textwidth]{rule110_defects_fixed.pdf}
+\caption{Rule~110, defect display (black where the $14$-cell word is not
+an ether word), time downward. Left: ring. Right: box with mirror
+walls, same initial data; the left wall has nucleated a different
+background, which advances into the box and emits gliders.}
+\label{fig:r110}
+\end{figure}
+
+\section{Two and three dimensions}\label{sec:2d}
+
+\paragraph{Regimes.} In two dimensions \eqref{eq:cca} is the five-point
+mean plus $a$ modulo~$1$. A scan of $a$ in steps of $0.01$ on a $128^2$
+torus from random data (script \texttt{scan2d.py}) gives a late activity
+fraction that varies continuously with $a$, from $0.29$ near $a=0.01$ to
+$0.92$ on the plateaus $a\in[0.34,0.43]$ and $[0.57,0.66]$, with dips to
+$0.43$--$0.45$ near $a=\frac13,\frac12,\frac23$. There are no sharp
+class-4 windows of the one-dimensional kind, and the one-dimensional
+class-4 value $a=0.398$ is fully chaotic in two dimensions. Space-time
+cuts (Figure~\ref{fig:cuts}) show three regimes: near $a=\frac13$ and
+$\frac23$ the background is a period-three cycle and the dynamics
+consists of slowly wandering \emph{phase walls} between its three
+phases; near $a=\frac12$ there are intermittent short-lived spots on a
+period-two background, in the manner of spatiotemporal intermittency
+\cite{ChateManneville}; on the plateaus, spatiotemporal chaos. We found
+no gliders in this family in two dimensions; its localized structures
+are the phase walls and the spots.
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\textwidth]{cuts2d_spacetime.pdf}
+\caption{Space-time cuts (middle row of a $128^2$ torus against the last
+$256$ of $1200$ steps, difference display) for
+$a=0.33,\,0.49,\,0.51,\,0.67,\,0.02,\,0.398$. Wandering phase walls at
+$0.33$ and $0.67$, intermittent spots at $0.49$ and $0.51$, a regular
+lattice at $0.02$, chaos at $0.398$.}
+\label{fig:cuts}
+\end{figure}
+
+\begin{figure}[tbp]
+\centering
+\includegraphics[width=\textwidth]{filmstrip2d_a0.33.pdf}\\[4pt]
+\includegraphics[width=\textwidth]{filmstrip2d_a0.49.pdf}
+\caption{The $128^2$ box with mirror walls, difference display, at
+steps $0,50,100,200$ (top row of each strip) and $400,600,800,1200$
+(bottom row). Upper strip, $a=0.33$: random data collapse within fifty
+steps into a period-three background crossed by phase walls, which then
+wander, join and pinch off; walls parallel to a side are cleared from a
+margin several cells wide, walls perpendicular to it end on it. Lower
+strip, $a=0.49$: intermittent spots on a period-two background, born and
+dying everywhere except at the corners.}
+\label{fig:box033}
+\end{figure}
+
+\paragraph{Activity per stratum.} We run the box with mirror walls,
+classify every node by the codimension of its stratum ($0$ interior, $1$
+face, $2$ edge or two-dimensional corner, $3$ three-dimensional corner),
+and record the time-averaged activity indicator, defined as the maximum
+over all existing neighbour differences of
+$\dist(u_{\mathbf i}-u_{\mathbf j},\Z)>0.05$. Grids are $128^2$ for
+$1500$ steps and $32^3$ for $800$ steps, averaged after a transient of
+one third of the run, over eight seeds (script \texttt{strata\_seeds.py}).
+Table~\ref{tab:strata} gives the results.
+
+\begin{table}[tbp]
+\centering
+\begin{tabular}{@{}llllll@{}}
+\toprule
+regime & grid & codim $0$ & codim $1$ & codim $2$ & codim $3$ \\
+\midrule
+chaos, $a=0.398$ & $128^2$ & 0.989(0) & 0.948(0) & 0.738(3) & \\
+chaos, $a=0.398$ & $32^3$  & 0.997(0) & 0.993(0) & 0.981(0) & 0.922(3) \\
+intermittent, $a=0.49$ & $128^2$ & 0.558(2) & 0.494(2) & 0.196(4) & \\
+intermittent, $a=0.49$ & $32^3$  & 0.484(5) & 0.505(5) & 0.506(3) & 0.305(8) \\
+phase walls, $a=0.33$ & $128^2$ & 0.510(5) & 0.340(3) & 0.172(11) & \\
+chaos (3-D rule), $a=0.33$ & $32^3$ & 0.996(2) & 0.992(5) & 0.973(7) & 0.860(10) \\
+\bottomrule
+\end{tabular}
+\caption{Time-averaged activity fraction per boundary stratum of the box
+with mirror walls, mean over eight seeds with the standard error in the
+last digits in parentheses.}
+\label{tab:strata}
+\end{table}
+
+Four observations. First, in the chaotic regime the activity decreases
+monotonically with the codimension of the stratum, in both dimensions,
+and the boundary layer is one cell deep: at distance one from the
+nearest wall the two-dimensional activity is already $0.982$ against
+$0.989$ in the bulk. This is the kinematic effect of
+Corollary~\ref{cor:self}: a node of codimension $c$ has $c$ of its
+neighbour pairs identified by symmetry, so it has fewer independent
+neighbours to differ from, and the effect compounds with $c$. Part of
+the trend is therefore a property of the indicator, which takes a
+maximum over fewer independent differences on the strata. Second, in the
+intermittent regime the corner is strongly suppressed in both
+dimensions ($0.20$ against $0.56$ in two dimensions, $0.31$ against
+$0.48$ in three), while the three-dimensional faces and edges sit
+slightly above the bulk value. So in two dimensions the spots avoid the
+corners but not the walls, and in three dimensions only the eight corner
+nodes are special; the twelve edges, which are the analogue of the
+two-dimensional corners, are not. Third, the phase-wall regime is the
+one in which the box is felt at a distance: the activity profile
+against the distance to the nearest wall is
+$0.34,\,0.38,\,0.43,\,0.45,\,0.46,\,0.47$ for distances $0$ to $5$,
+still rising at distance five, against one cell in the other regimes.
+Corollary~\ref{cor:self} says why: a phase wall parallel to a mirror
+meets its image, a phase wall of opposite orientation, and the pair
+annihilates when the strip between them collapses, so a margin along
+each mirror is cleared of parallel phase walls; phase walls
+perpendicular to the mirror are their own images, end on it, and are
+the activity that remains at distance zero. This is the two-dimensional
+counterpart of the absorbing walls of rule~54. Fourth, the same
+$a=0.33$ is chaotic under the seven-point rule in three dimensions, with
+the one-cell layer of the chaotic regime, which shows that the regime,
+not the constant, is what the strata respond to.
+
+\section{Discussion: is the box a selecting environment?}\label{sec:disc}
+
+Wong et al.\ \cite{Wong2023} have proposed that the functional
+information of a system, in the sense of
+\cite{Szostak2003,Hazen2007}, increases when many configurations are
+subjected to selection for some function, and have asked which
+environments act as selectors. A box with mirror walls is about the
+simplest fixed environment a cellular automaton can have, and the
+results above say precisely what it selects. The ``function'' is
+surviving one's own reflection: the wall applies to every structure that
+reaches it the symmetric entry of the collision table, and keeps exactly
+the structures for which that entry is elastic. In the continuous
+automaton of Section~\ref{sec:cca} every structure passes and the box
+selects nothing. In rule~54 no mover passes, so the box filters a sparse
+population to its stationary members, while the ring keeps a conserved
+excess of movers; this is differential persistence imposed by the
+environment, and it is the only regime in which we see the box change a
+population. It is one-shot filtering toward a fixed survivor set, not
+the open-ended accumulation the law of \cite{Wong2023} describes:
+nothing is copied, and nothing varies. In rule~110 the walls do not
+filter but emit.
+
+Selection among structures, as opposed to against all of one kind,
+requires a reflection-symmetric rule with several mover species whose
+symmetric self-collisions differ, some elastic and some not. Rule~54 has
+the symmetry but one mover species; rule~110 has a rich zoo
+\cite{Cook} but not the symmetry. Two-dimensional continuous automata of
+Lenia type \cite{Lenia} have both, and add the corner, a four-body
+symmetric collision, as a second and independent filter. The experiment
+of this paper (exhaustive wall events, sparse launches with the same
+seeds in both geometries, exact counting) transfers to them unchanged.
+
+\section*{Code}\sloppy
+All scripts, the figures and the source of this article are public at
+\url{https://github.com/MiguelPerezI/mirror-walls}. In \texttt{code/}:
+\texttt{contca.py} (rule \eqref{eq:cca} with ternary-cube walls) and
+\texttt{reflection\_principle.py} (Theorem~\ref{thm:reflection});
+\texttt{view1d.py}, \texttt{tracker.py}, \texttt{perstep.py} and
+\texttt{population.py} (Section~\ref{sec:cca}); \texttt{eca.py},
+\texttt{rule54\_exact.py}, \texttt{rule54\_phases.py},
+\texttt{rule54\_sparse.py}, \texttt{rule54\_charge.py} and
+\texttt{fig\_rule54.py} (Section~\ref{sec:r54}); \texttt{eca\_box.py}
+(Section~\ref{sec:r110}); \texttt{scan2d.py}, \texttt{cuts2d.py},
+\texttt{filmstrip2d.py} and \texttt{strata\_seeds.py}
+(Section~\ref{sec:2d}). \texttt{view2d.py} is a live viewer of the
+two-dimensional box (\texttt{python3.12 view2d.py 0.33 160 mirror}).
+
+\begin{thebibliography}{99}
+\bibitem{TernaryCube}
+M.~E.~P\'erez Ibarra, J.~Flores Rodr\'iguez,
+\emph{One case, not twenty-seven: the ternary cube as the index set for
+boundary stencils of finite-difference schemes in any dimension},
+arXiv preprint (2026). [Insert arXiv identifier.]
+\bibitem{NKS}
+S.~Wolfram, \emph{A New Kind of Science}, Wolfram Media, 2002.
+\bibitem{Kaneko}
+K.~Kaneko, \emph{Overview of coupled map lattices}, Chaos 2 (1992) 279--282.
+\bibitem{Boccara}
+N.~Boccara, J.~Nasser, M.~Roger, \emph{Particlelike structures and their
+interactions in spatiotemporal patterns generated by one-dimensional
+deterministic cellular-automaton rules}, Phys.\ Rev.\ A 44 (1991)
+866--875.
+\bibitem{HansonCrutchfield}
+J.~E.~Hanson, J.~P.~Crutchfield, \emph{Computational mechanics of
+cellular automata: an example}, Physica D 103 (1997) 169--189.
+\bibitem{Martinez2006}
+G.~J.~Mart\'inez, A.~Adamatzky, H.~V.~McIntosh, \emph{Phenomenology of
+glider collisions in cellular automaton Rule~54 and associated logical
+gates}, Chaos Solitons Fractals 28 (2006) 100--111.
+\bibitem{Martinez2014}
+G.~J.~Mart\'inez, A.~Adamatzky, H.~V.~McIntosh, \emph{Complete
+characterization of structure of Rule~54}, Complex Systems 23 (2014);
+arXiv:1410.3096.
+\bibitem{Cook}
+M.~Cook, \emph{Universality in elementary cellular automata}, Complex
+Systems 15 (2004) 1--40.
+\bibitem{ChateManneville}
+H.~Chat\'e, P.~Manneville, \emph{Transition to turbulence via
+spatio-temporal intermittency}, Phys.\ Rev.\ Lett.\ 58 (1987) 112--115.
+\bibitem{Lenia}
+B.~W.-C.~Chan, \emph{Lenia and expanded universe}, arXiv:2005.03742.
+\bibitem{Wong2023}
+M.~L.~Wong, C.~E.~Cleland, D.~Arend~Jr., S.~Bartlett, H.~J.~Cleaves~II,
+H.~Demarest, A.~Prabhu, J.~I.~Lunine, R.~M.~Hazen, \emph{On the roles of
+function and selection in evolving systems}, Proc.\ Natl.\ Acad.\ Sci.\
+USA 120 (2023) e2310223120.
+\bibitem{Szostak2003}
+J.~W.~Szostak, \emph{Functional information: molecular messages}, Nature
+423 (2003) 689.
+\bibitem{Hazen2007}
+R.~M.~Hazen, P.~L.~Griffin, J.~M.~Carothers, J.~W.~Szostak,
+\emph{Functional information and the emergence of biocomplexity},
+Proc.\ Natl.\ Acad.\ Sci.\ USA 104 (2007) 8574--8581.
+\end{thebibliography}
+
+\end{document}

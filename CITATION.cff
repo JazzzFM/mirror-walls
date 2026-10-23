@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this code or article, please cite it as below."
+title: "Reflecting walls are self-collisions: cellular automata in a mirror box"
+authors:
+  - family-names: "Pérez Ibarra"
+    given-names: "Miguel E."
+  - family-names: "Flores Rodríguez"
+    given-names: "Jaziel"
+year: 2026
+repository-code: "https://github.com/MiguelPerezI/mirror-walls"
+license: MIT
