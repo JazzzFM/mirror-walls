@@ -1,7 +1,7 @@
 # Reflecting walls are self-collisions: cellular automata in a mirror box
 
 Code, figures and LaTeX source for the article of the same title by
-Miguel E. Pérez Ibarra and Jaziel Flores Rodríguez. The compiled article is
+Miguel Esteban Pérez Ibarra. The compiled article is
 [`main.pdf`](main.pdf); the source is [`main.tex`](main.tex).
 
 ## The idea in one paragraph
@@ -124,7 +124,7 @@ pdflatex main.tex && pdflatex main.tex
 
 - The mirror walls are the ternary-cube boundary rule of *One case, not
   twenty-seven: the ternary cube as the index set for boundary stencils of
-  finite-difference schemes in any dimension*, by the same authors.
+  finite-difference schemes in any dimension*, by the same author.
 - The automaton arose from the quantized heat simulations explained in
   *Apparent complexity of quantized diffusion: contour maps, aliasing and
   moiré*, code at [MiguelPerezI/heat-parity-ca](https://github.com/MiguelPerezI/heat-parity-ca).
@@ -132,4 +132,4 @@ pdflatex main.tex && pdflatex main.tex
 ## License
 
 Code under the MIT License (see `LICENSE`). The article text and figures are
-© the authors.
+© the author.
