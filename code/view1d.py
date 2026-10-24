@@ -1,5 +1,5 @@
 """Big space-time diagrams of the 1-D class-4 rule (a=0.398, mean of 3 + a, mod 1), Wolfram difference display.
-usage: python3.12 view1d.py [a] [N] [T]"""
+usage: python3 view1d.py [a] [N] [T]"""
 import sys, numpy as np
 from pngio import write_gray, upscale
 a = float(sys.argv[1]) if len(sys.argv) > 1 else 0.398
@@ -19,5 +19,5 @@ for bc in ('periodic', 'mirror'):
         rows.append(d); u = step(u, bc)
     S = np.array(rows)
     img = (255*(1 - np.minimum(1, 3*S))).astype(np.uint8)   # black = structure, white = background
-    path = f'/home/mike666/heat-parity-ca/figures/class4_1d_a{a}_{bc}.png'
+    path = f'../figures/class4_1d_a{a}_{bc}.png'
     write_gray(path, upscale(img, 3)); print(path)

@@ -94,21 +94,24 @@ counterpart of rule 54's absorbing walls.
 
 ## Running the code
 
-Requirements: Python 3.12 with NumPy; pygame for the live viewer. PNGs are
+Requirements: Python 3.12 or later with NumPy; pygame for the live viewer;
+CuPy (`cupy-cuda12x`) only for `contca_gpu.py` and `strata_gpu.py`, which
+reproduce the NumPy runs bit for bit (`python3 contca_gpu.py` checks it). PNGs are
 written by [`code/pngio.py`](code/pngio.py) (no PIL), and
 [`code/png2pdf.py`](code/png2pdf.py) turns them into vector PDFs for the
 article.
 
 ```
 cd code
-python3.12 reflection_principle.py        # box == doubled ring, exactly
-python3.12 view1d.py 0.398 300 600        # 1-D space-time diagrams
-python3.12 rule54_exact.py 10             # rule 54: phase classes, wall event, head-on collisions
-python3.12 rule54_phases.py               # rule 54: phases of every mover in 1500 launches
-python3.12 rule54_sparse.py               # rule 54: sparse launches, ring vs box
-python3.12 fig_rule54.py                  # rule 54 figures
-python3.12 strata_seeds.py 0.33 128 1500 32 800 8   # activity per stratum
-python3.12 view2d.py 0.33 160 mirror      # live viewer: space = pause, r = reseed, q = quit
+python3 reflection_principle.py        # box == doubled ring, exactly
+python3 view1d.py 0.398 300 600        # 1-D space-time diagrams
+python3 rule54_exact.py 10             # rule 54: phase classes, wall event, head-on collisions
+python3 rule54_phases.py               # rule 54: phases of every mover in 1500 launches
+python3 rule54_sparse.py               # rule 54: sparse launches, ring vs box
+python3 fig_rule54.py                  # rule 54 figures
+python3 strata_seeds.py 0.33 128 1500 32 800 8   # activity per stratum
+python3 strata_gpu.py 0.33 1024 3000 128 1500 16   # same on the GPU (CuPy), bit-identical, ~500x faster
+python3 view2d.py 0.33 160 mirror      # live viewer: space = pause, r = reseed, q = quit
 ```
 
 `SELECTION_EXPERIMENT.md` is the lab notebook of the experiments behind the

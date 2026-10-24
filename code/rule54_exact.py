@@ -4,7 +4,7 @@ from the ether at the same time. (1) Insert every binary word of length L into t
 leave exactly one right mover: this gives every phase class of the isolated right mover w+.
 (2) Wall: each class meets the mirror wall of a box of length 4k+1 in a fixed number of ways; record the outcome.
 (3) Torus: every head-on collision of a w+ class with a w- class (mirror images), all relative offsets.
-usage: python3.12 rule54_exact.py [L]"""
+usage: python3 rule54_exact.py [L]"""
 import sys, numpy as np
 from collections import Counter
 from eca import step
