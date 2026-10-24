@@ -600,17 +600,23 @@ All scripts, the figures and the source of this article are public at
 \url{https://github.com/MiguelPerezI/mirror-walls}. In \texttt{code/}:
 \texttt{contca.py} (rule \eqref{eq:cca} with ternary-cube walls) and
 \texttt{reflection\_principle.py} (Theorem~\ref{thm:reflection});
-\texttt{view1d.py}, \texttt{tracker.py}, \texttt{perstep.py} and
-\texttt{population.py} (Section~\ref{sec:cca}); \texttt{eca.py},
+\texttt{view1d.py}, \texttt{tracker.py}, \texttt{catalogue2.py},
+\texttt{slowclass2.py}, \texttt{perstep.py}, \texttt{population.py} and
+\texttt{wall1d.py} (Section~\ref{sec:cca}); \texttt{eca.py},
 \texttt{rule54\_exact.py}, \texttt{rule54\_phases.py},
 \texttt{rule54\_sparse.py}, \texttt{rule54\_charge.py} and
-\texttt{fig\_rule54.py} (Section~\ref{sec:r54}); \texttt{eca\_box.py}
+\texttt{fig\_rule54.py} (Section~\ref{sec:r54}); \texttt{eca\_box.py},
+\texttt{rule110\_ether.py} and \texttt{fig\_rule110.py}
 (Section~\ref{sec:r110}); \texttt{scan2d.py}, \texttt{cuts2d.py},
 \texttt{filmstrip2d.py} and \texttt{strata\_seeds.py}
 (Section~\ref{sec:2d}); \texttt{contca\_gpu.py} and
 \texttt{strata\_gpu.py} are CuPy versions of the automaton and of the
 strata measurement, bit-identical to the NumPy ones
-(Table~\ref{tab:strata_big}). \texttt{view2d.py} is a live viewer of the
+(Table~\ref{tab:strata_big}). The script \texttt{reproduce.sh} at the top
+of the repository runs all of them with the arguments used here, writes
+their outputs to \texttt{results/} and regenerates the figures, and
+\texttt{check\_results.py} compares every number quoted in this article
+with those outputs. \texttt{view2d.py} is a live viewer of the
 two-dimensional box (\texttt{python3 view2d.py 0.33 160 mirror}).
 
 \begin{thebibliography}{99}
