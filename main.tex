@@ -371,9 +371,9 @@ structures can absorb, reflect or convert movers \cite{Martinez2006}).
 \includegraphics[width=0.85\textwidth]{rule54_sparse.pdf}
 \caption{One sparse launch, off-ether display, $1200$ steps (every
 second step shown), ring of $400$ cells (left) and box of $401$ cells
-(right), same patch. The patch emits a train of three left movers and
+(right), same patch. The patch emits a train of four left movers and
 one right mover. On the ring the right mover meets the train across the
-periodic seam and annihilates one member; the other two circulate
+periodic seam and annihilates one member; the other three circulate
 forever. In the box every mover meets its image at a wall.}
 \label{fig:r54sparse}
 \end{figure}
@@ -469,8 +469,9 @@ $1500$ steps and $32^3$ for $800$ steps, averaged after a transient of
 one third of the run, over eight seeds (script \texttt{strata\_seeds.py}).
 Table~\ref{tab:strata} gives the results. A CuPy implementation of the
 same automaton (\texttt{contca\_gpu.py}, \texttt{strata\_gpu.py})
-reproduces every entry bit for bit and runs about five hundred times
-faster, which allows larger boxes: Table~\ref{tab:strata_big} repeats the
+reproduces every entry bit for bit and computes a row of the table in a
+fraction of a second instead of about a minute on one CPU core, which
+allows larger boxes: Table~\ref{tab:strata_big} repeats the
 measurement on $1024^2$ for $3000$ steps and on $128^3$ for $1500$ steps,
 with sixteen seeds.
 
@@ -511,7 +512,7 @@ chaos (3-D rule), $a=0.33$ & $128^3$ & 0.999(0) & 0.999(0) & 0.995(0) & 0.898(10
 \caption{The measurement of Table~\ref{tab:strata} on larger boxes:
 $1024^2$ for $3000$ steps and $128^3$ for $1500$ steps, sixteen seeds,
 same transient, threshold and rounding (script \texttt{strata\_gpu.py}).
-The strata with many nodes now have standard errors below $0.001$; the
+The strata with many nodes now have standard errors of at most $0.001$; the
 corner strata keep four or eight nodes per run and do not sharpen with
 the box size.}
 \label{tab:strata_big}
@@ -521,8 +522,9 @@ Four observations. First, in the chaotic regime the activity decreases
 monotonically with the codimension of the stratum, in both dimensions,
 and the boundary layer is one cell deep: at distance one from the
 nearest wall the two-dimensional activity is already $0.982$ against
-$0.989$ in the bulk. The values are the same to three decimals from
-$128^2$ to $1024^2$ and from $32^3$ to $128^3$. This is the kinematic effect of
+$0.989$ in the bulk. In three dimensions the values are the same to
+three decimals from $32^3$ to $128^3$; in two dimensions they change by
+at most $0.007$ from $128^2$ to $1024^2$. This is the kinematic effect of
 Corollary~\ref{cor:self}: a node of codimension $c$ has $c$ of its
 neighbour pairs identified by symmetry, so it has fewer independent
 neighbours to differ from, and the effect compounds with $c$. Part of
@@ -531,8 +533,9 @@ maximum over fewer independent differences on the strata. Second, in the
 intermittent regime the corner is strongly suppressed in both
 dimensions ($0.20$ against $0.56$ in two dimensions, $0.31$ against
 $0.48$ in three on $32^3$ and against $0.45$ on $128^3$), while the
-three-dimensional faces and edges sit above the bulk value, by an
-amount that grows with the box ($0.02$ on $32^3$, $0.04$ on $128^3$).
+three-dimensional faces and edges sit above the bulk value: the faces
+by $0.02$ on both boxes, the edges by $0.02$ on $32^3$ and $0.04$ on
+$128^3$.
 In this regime the wall is felt beyond one cell, in the opposite sense:
 the activity overshoots the bulk at distances $2$--$4$ in two dimensions
 ($0.59$ against $0.55$) and at distance $1$ in three ($0.49$ against
@@ -558,9 +561,9 @@ perpendicular to the mirror are their own images, end on it, and are
 the activity that remains at distance zero. This is the two-dimensional
 counterpart of the absorbing walls of rule~54. Fourth, the same
 $a=0.33$ is chaotic under the seven-point rule in three dimensions, with
-the one-cell layer of the chaotic regime (on $64^3$ and larger the
-faces equal the bulk, $0.999$, and only the edges, $0.995$, and the
-corners, $0.90$, depart), which shows that the regime, not the
+the one-cell layer of the chaotic regime (on $64^3$, $96^3$ and $128^3$
+the faces equal the bulk, $0.999$, and only the edges, $0.994$--$0.995$,
+and the corners, $0.89$--$0.90$, depart), which shows that the regime, not the
 constant, is what the strata respond to.
 
 \section{Discussion: is the box a selecting environment?}\label{sec:disc}

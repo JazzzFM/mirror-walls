@@ -158,12 +158,12 @@ def _():
 @check('S5.12', 'Table 1 caption', 'N+ - N- at step 300 equals N+ - N- at step 2000 in 88 of the 90 rings', '88')
 def _():
     l, ref = grab('rule54_sparse.txt', r'^  torus survivors:'); v = find(r'at t=2000 in (\d+) seeds', l); return v, v == '88', [ref]
-@check('S5.13', 'Fig. 3 caption', 'The patch emits a train of three left movers and one right mover', '(N+, N-) = (1, 3)')
+@check('S5.13', 'Fig. 3 caption', 'The patch emits a train of four left movers and one right mover', '(N+, N-) = (1, 4)')
 def _():
-    l, ref = grab('fig_rule54.txt', r'^sparse figure, ring'); v = find(r'ring: \(N\+, N-\) at t=100 (\(\d+, \d+\))', l); return v, v == '(1, 3)', [ref]
-@check('S5.14', 'Fig. 3 caption', 'the right mover meets the train ... and annihilates one member; the other two circulate forever', '(N+, N-) = (0, 2) at t=2000')
+    l, ref = grab('fig_rule54.txt', r'^sparse figure, ring'); v = find(r'ring: \(N\+, N-\) at t=100 (\(\d+, \d+\))', l); return v, v == '(1, 4)', [ref]
+@check('S5.14', 'Fig. 3 caption', 'the right mover meets the train ... and annihilates one member; the other three circulate forever', '(N+, N-) = (0, 3) at t=2000')
 def _():
-    l, ref = grab('fig_rule54.txt', r'^sparse figure, ring'); v = find(r'ring: .* at t=2000 (\(\d+, \d+\)); box', l); return v, v == '(0, 2)', [ref]
+    l, ref = grab('fig_rule54.txt', r'^sparse figure, ring'); v = find(r'ring: .* at t=2000 (\(\d+, \d+\)); box', l); return v, v == '(0, 3)', [ref]
 @check('S5.15', 'Fig. 3 caption', 'In the box every mover meets its image at a wall', '(0, 0) at t=2000')
 def _():
     l, ref = grab('fig_rule54.txt', r'^sparse figure, ring'); v = find(r'box: .* at t=2000 (\(\d+, \d+\))', l); return v, v == '(0, 0)', [ref]
@@ -230,10 +230,11 @@ for tab, rows, name, size, S in (('Table 2', TABLE2, 'strata_seeds.txt', {2: (12
 def _():
     cod, d, ref = strata('strata_seeds.txt', 2, 128, 1500, '0.398', 8); return f"{d[1]}; {cod[0][0]}", d[1] == '0.982' and cod[0][0] == '0.989', [ref]
 for n, (N1, T1), (N2, T2) in ((2, (128, 1500), (1024, 3000)), (3, (32, 800), (128, 1500))):
-    @check(f"S7.6.{n}d", 'Sec. 7, first observation', f"The values are the same to three decimals from {N1}^{n} to {N2}^{n} (chaos, a=0.398)", 'equal to 3 decimals')
+    @check(f"S7.6.{n}d", 'Sec. 7, first observation', (f"In three dimensions the values are the same to three decimals from {N1}^{n} to {N2}^{n} (chaos, a=0.398)" if n == 3 else f"in two dimensions they change by at most 0.007 from {N1}^{n} to {N2}^{n} (chaos, a=0.398)"), ('equal to 3 decimals' if n == 3 else '<= 0.007'))
     def _(n=n, N1=N1, T1=T1, N2=N2, T2=T2):
         c1, _, r1 = strata('strata_seeds.txt', n, N1, T1, '0.398', 8); c2, _, r2 = strata('strata_gpu.txt', n, N2, T2, '0.398', 16)
-        return ', '.join(f"codim{c} {c1[c][0]}/{c2[c][0]}" for c in sorted(c1)), all(c1[c][0] == c2[c][0] for c in c1), [r1, r2]
+        d = max(round(abs(float(c1[c][0]) - float(c2[c][0])), 3) for c in c1)
+        return ', '.join(f"codim{c} {c1[c][0]}/{c2[c][0]}" for c in sorted(c1)), (d == 0 if n == 3 else d <= 0.007), [r1, r2]
 @check('S7.7', 'Sec. 7, second observation', 'the corner is strongly suppressed ... (0.20 against 0.56 in two dimensions', '0.20; 0.56')
 def _():
     cod, _, ref = strata('strata_seeds.txt', 2, 128, 1500, '0.49', 8); return f"{cod[2][0]}; {cod[0][0]}", close('0.20', cod[2][0]) and close('0.56', cod[0][0]), [ref]
@@ -242,12 +243,12 @@ def _():
     c1, _, r1 = strata('strata_seeds.txt', 3, 32, 800, '0.49', 8); c2, _, r2 = strata('strata_gpu.txt', 3, 128, 1500, '0.49', 16)
     v = (c1[3][0], c1[0][0], c2[3][0], c2[0][0])
     return '; '.join(v), all(close(p, x) for p, x in zip(('0.31', '0.48', '0.31', '0.45'), v)), [r1, r2]
-for st, c in (('faces', 1), ('edges', 2)):
-    @check(f"S7.9.{st}", 'Sec. 7, second observation', f"the three-dimensional faces and edges sit above the bulk value, by an amount that grows with the box (0.02 on 32^3, 0.04 on 128^3) [{st}]", '0.02; 0.04')
-    def _(c=c):
+for st, c, p1, p2 in (('faces', 1, '0.02', '0.02'), ('edges', 2, '0.02', '0.04')):
+    @check(f"S7.9.{st}", 'Sec. 7, second observation', f"the three-dimensional faces and edges sit above the bulk value: the faces by 0.02 on both boxes, the edges by 0.02 on 32^3 and 0.04 on 128^3 [{st}]", f"{p1}; {p2}")
+    def _(c=c, p1=p1, p2=p2):
         c1, _, r1 = strata('strata_seeds.txt', 3, 32, 800, '0.49', 8); c2, _, r2 = strata('strata_gpu.txt', 3, 128, 1500, '0.49', 16)
         x, y = float(c1[c][0]) - float(c1[0][0]), float(c2[c][0]) - float(c2[0][0])
-        return f"{x:.3f}; {y:.3f}", close('0.02', f"{x:.3f}") and close('0.04', f"{y:.3f}"), [r1, r2]
+        return f"{x:.3f}; {y:.3f}", close(p1, f"{x:.3f}") and close(p2, f"{y:.3f}"), [r1, r2]
 @check('S7.10', 'Sec. 7, second observation', 'the activity overshoots the bulk at distances 2-4 in two dimensions (0.59 against 0.55)', '0.59; 0.55')
 def _():
     cod, d, ref = strata('strata_gpu.txt', 2, 1024, 3000, '0.49', 16); b = float(cod[0][0]); pk = max(d[2:5], key=float)
@@ -288,11 +289,11 @@ def _():
     got = [strata(f, 2, N, T, '0.33', S) for f, N, T, S in runs]; f1 = [float(g[0][1][0]) for g in got]; f2 = [float(g[0][2][0]) for g in got]
     return f"faces {min(f1):.3f}-{max(f1):.3f}, corners {min(f2):.3f}-{max(f2):.3f}", max(f1) - min(f1) <= 0.02 and max(f2) - min(f2) <= 0.02, [g[2] for g in got]
 for N in (64, 96, 128):
-    @check(f"S7.18.{N}", 'Sec. 7, fourth observation', f"on 64^3 and larger the faces equal the bulk, 0.999, and only the edges, 0.995, and the corners, 0.90, depart [{N}^3, a=0.33]", '0.999; 0.999; 0.995; 0.90')
+    @check(f"S7.18.{N}", 'Sec. 7, fourth observation', f"on 64^3, 96^3 and 128^3 the faces equal the bulk, 0.999, and only the edges, 0.994-0.995, and the corners, 0.89-0.90, depart [{N}^3, a=0.33]", '0.999; 0.999; 0.994-0.995; 0.89-0.90')
     def _(N=N):
         cod, _, ref = strata('strata_gpu.txt', 3, N, 1500, '0.33', 16); v = [cod[c][0] for c in range(4)]
-        return '; '.join(v), all(close(p, x) for p, x in zip(('0.999', '0.999', '0.995', '0.90'), v)), [ref]
-@check('S7.19', 'Table 3 caption', 'The strata with many nodes now have standard errors below 0.001 (codim 0 and 1, and 3-D codim 2; at the printed precision)', '<= 0.001')
+        return '; '.join(v), v[0] == v[1] == '0.999' and v[2] in ('0.994', '0.995') and 0.885 <= float(v[3]) < 0.905, [ref]
+@check('S7.19', 'Table 3 caption', 'The strata with many nodes now have standard errors of at most 0.001 (codim 0 and 1, and 3-D codim 2; at the printed precision)', '<= 0.001')
 def _():
     se, refs = [], []
     for a, n, _ in TABLE3:
@@ -303,7 +304,7 @@ def _():
 def _():
     L = lines('contca_gpu.txt'); ok = sum('max|gpu-cpu| over all steps = 0.000e+00, activity mismatches = 0, equal arrays = True' in l for l in L) == 4 and any(l == 'batched 4 seeds == separate runs: True' for l in L)
     return '4 of 4 self-tests equal, batched equal' if ok else 'self-test mismatch', ok, ['contca_gpu.txt']
-todo('S7.21', 'Sec. 7', 'and runs about five hundred times faster', '~500x', 'not checked (timing; see the gpu times in results/strata_gpu.txt and results/reproduce_times.txt)')
+todo('S7.21', 'Sec. 7', 'computes a row of the table in a fraction of a second instead of about a minute on one CPU core', '<1 s vs ~1 min', 'not checked (timing; see the gpu times in results/strata_gpu.txt and results/reproduce_times.txt)')
 
 # ---------------------------------------------------------------- figures: SHA-256 of the committed files
 FIGS = {'Fig. 1': {'class4_1d_a0.398_periodic.png': '69101307455c8f8107d17f362b6412fd47e893012f72a3db9d766f2a6010897f',
